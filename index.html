@@ -2,21 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Character Counter & Sorter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Character Counter</title>
+    <meta name="description" content="A character counter for any phrase" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+      integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
+      crossorigin="anonymous"
+    />
+
     <style>
       body {
         font-family: Arial, sans-serif;
-        padding: 40px;
+        padding-top: 40px;
         background-color: #f4f4f4;
       }
-      .container {
+      .main-container {
         max-width: 600px;
         margin: auto;
         background: white;
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
       textarea {
         width: 100%;
@@ -39,43 +54,70 @@
       }
     </style>
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="d-flex flex-column min-vh-100">
+    <div id="root" class="flex-shrink-0"></div>
 
     <!-- Include React and ReactDOM via CDN -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
     <!-- React code in JSX -->
     <script type="text/babel">
       const { useState } = React;
 
+      function convertWhitespaceToFriendlyNames(text) {
+        let friendlyText = text;
+
+        // Replace spaces with '[SPACE]'
+        friendlyText = friendlyText.replace(/ /g, "[SPACE]");
+
+        // Replace tabs with '[TAB]'
+        friendlyText = friendlyText.replace(/\t/g, "[TAB]");
+
+        // Replace newlines with '[NEWLINE]'
+        friendlyText = friendlyText.replace(/\n/g, "[NEWLINE]");
+
+        return friendlyText;
+      }
+
       function CharCalculator() {
         const [input, setInput] = useState("");
 
         const sortedLetters = input
-          .split('')
+          .split("")
           .sort((a, b) => a.localeCompare(b))
-          .join('');
+          .join("");
 
         const characterCount = input.length;
 
-        const charFrequency = [...input]
-          .reduce((acc, char) => {
-            acc[char] = (acc[char] || 0) + 1;
-            return acc;
-          }, {});
+        const charFrequency = [...input].reduce((acc, char) => {
+          acc[char] = (acc[char] || 0) + 1;
+          return acc;
+        }, {});
 
         const frequencyDisplay = Object.keys(charFrequency)
           .sort((a, b) => a.localeCompare(b))
-          .map(char => `${char}: ${charFrequency[char]}`)
-          .join(', ');
+          .map((char) => (
+            <tr>
+              <td>
+                <strong>{convertWhitespaceToFriendlyNames(char)}</strong>
+              </td>
+              <td>{charFrequency[char]}</td>
+            </tr>
+          ));
 
         return (
-          <div className="container">
-            <h2>Character Counter & Alphabetical Sorter</h2>
+          <div className="container main-container">
+            <h2 className="text-center">Character Counter</h2>
             <textarea
+              id="phraseInput"
               placeholder="Type your phrase here..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -84,17 +126,84 @@
               <span className="label">Total Characters:</span>
               {characterCount}
 
-              <span className="label">Alphabetically Sorted Characters:</span>
-              {sortedLetters || "(empty)"}
-
               <span className="label">Character Frequency:</span>
-              {frequencyDisplay || "(empty)"}
+              <table className="table table-sm table-striped text-center">
+                <thead>
+                  <tr>
+                    <td className="w-50">Character</td>
+                    <td className="w-50">Count</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {characterCount > 0 ? (
+                    frequencyDisplay
+                  ) : (
+                    <tr>
+                      <td colspan="2">(none)</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         );
       }
 
-      ReactDOM.createRoot(document.getElementById('root')).render(<CharCalculator />);
+      ReactDOM.createRoot(document.getElementById("root")).render(
+        <CharCalculator />
+      );
     </script>
+
+    <footer class="text-center mt-auto">
+      <hr />
+      <div class="container w-100 px-4 pt-4">
+        <section>
+          <p>
+            <em>
+              Like what you see? Consider supporting future development by
+              donating at
+              <a
+                href="https://www.paypal.me/egreerme"
+                target="_blank"
+                rel="noreferrer"
+                title="Buy me a pack!"
+              >
+                paypal.me/egreerme
+              </a>
+            </em>
+          </p>
+          <a
+            class="btn btn-floating m-1"
+            href="https://github.com/egreer/magic.jibbermaster.com"
+            role="button"
+            target="_blank"
+            rel="noreferrer"
+            title="Explore source code at Github"
+          >
+            <i class="fab fa-github"></i>
+          </a>
+          <a
+            class="btn btn-floating m-1"
+            href="https://www.paypal.me/egreerme"
+            role="button"
+            target="_blank"
+            rel="noreferrer"
+            title="Donate at Paypal"
+          >
+            <i class="fab fa-paypal"></i>
+          </a>
+          <a
+            class="btn btn-floating m-1"
+            href="qr.png"
+            role="button"
+            target="_blank"
+            rel="noreferrer"
+            title="Download QR"
+          >
+            <i class="fas fa-qrcode"></i>
+          </a>
+        </section>
+      </div>
+    </footer>
   </body>
 </html>
